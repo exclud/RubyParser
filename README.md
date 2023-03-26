@@ -25,4 +25,5 @@ To compile the parser and lexer:
     gcc -o parser y.tab.c lexer.c -lfl
 
 To test the parser run : 
+    
     ./parser test.txt
