@@ -5,8 +5,9 @@
 %%
 
 [0-9]+      { yylval.ival = atoi(yytext); return INTEGER; }
-[ \t\n]      { /* Ignore whitespace */ }
-.           { return yytext[0]; }
+[ \t]       { /* Ignore whitespace */ }
+\n          { return '\n'; }
+[+\-*/()]    { return yytext[0]; }
 
 %%
 

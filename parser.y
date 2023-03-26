@@ -11,34 +11,47 @@ void yyerror(const char *s);
 }
 
 %token <ival> INTEGER
+%left '+' '-'
+%left '*' '/'
+%right UMINUS
+%type <ival> exp
 
 %%
-input:
-      /* %empty */
+input
+    : /* empty */
     | input line
     ;
 
-line:
-      INTEGER { printf("Parsed an integer: %d\n", $1); }
-    | '\n'
+line
+    : exp '\n' { printf("Result: %d\n", $1); }
     | error '\n' { yyerrok; }
+    ;
+
+exp
+    : INTEGER
+    | exp '+' exp { $$ = $1 + $3; }
+    | exp '-' exp { $$ = $1 - $3; }
+    | exp '*' exp { $$ = $1 * $3; }
+    | exp '/' exp { if ($3 == 0) { yyerror("division by zero"); } else { $$ = $1 / $3; } }
+    | '-' exp %prec UMINUS { $$ = -$2; }
+    | '(' exp ')' { $$ = $2; }
     ;
 
 %%
 
 int main(int argc, char **argv) {
-  if (argc > 1) {
-    FILE *file = fopen(argv[1], "r");
-    if (!file) {
-      fprintf(stderr, "Cannot open file %s\n", argv[1]);
-      return 1;
+    if (argc > 1) {
+        FILE *file = fopen(argv[1], "r");
+        if (!file) {
+            fprintf(stderr, "Cannot open file %s\n", argv[1]);
+            return 1;
+        }
+        yyin = file;
     }
-    yyin = file;
-  }
-  yyparse();
-  return 0;
+    yyparse();
+    return 0;
 }
 
 void yyerror(const char *s) {
-  fprintf(stderr, "Error: %s\n", s);
+    fprintf(stderr, "Error: %s\n", s);
 }
