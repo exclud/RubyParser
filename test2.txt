@@ -1,7 +1,8 @@
-a = 1
-if a == 1
-  b = 2
-else
-  b = 3
-end
-while b
+a = 5
+b = 10
+c = a + b
+if (c > 10) {
+    d = c * 2
+} else {
+    d = c - 2
+}

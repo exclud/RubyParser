@@ -1,0 +1,456 @@
+   0  $accept : input $end
+
+   1  input :
+   2        | input line
+
+   3  line : exp '\n'
+   4       | assignment '\n'
+   5       | if_statement
+   6       | error '\n'
+
+   7  if_statement : IF '(' exp ')' line
+   8               | IF '(' exp ')' line ELSE line
+
+   9  assignment : IDENTIFIER ASSIGN exp
+
+  10  identifier : IDENTIFIER
+
+  11  exp : INTEGER
+  12      | identifier
+  13      | exp '+' exp
+  14      | exp '-' exp
+  15      | exp '*' exp
+  16      | exp '/' exp
+  17      | '-' exp
+  18      | '(' exp ')'
+
+state 0
+	$accept : . input $end  (0)
+	input : .  (1)
+
+	.  reduce 1
+
+	input  goto 1
+
+
+state 1
+	$accept : input . $end  (0)
+	input : input . line  (2)
+
+	$end  accept
+	error  shift 2
+	INTEGER  shift 3
+	IDENTIFIER  shift 4
+	IF  shift 5
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 8
+	identifier  goto 9
+	line  goto 10
+	assignment  goto 11
+	if_statement  goto 12
+
+
+state 2
+	line : error . '\n'  (6)
+
+	'\n'  shift 13
+	.  error
+
+
+state 3
+	exp : INTEGER .  (11)
+
+	.  reduce 11
+
+
+state 4
+	assignment : IDENTIFIER . ASSIGN exp  (9)
+	identifier : IDENTIFIER .  (10)
+
+	ASSIGN  shift 14
+	'+'  reduce 10
+	'-'  reduce 10
+	'*'  reduce 10
+	'/'  reduce 10
+	'\n'  reduce 10
+
+
+state 5
+	if_statement : IF . '(' exp ')' line  (7)
+	if_statement : IF . '(' exp ')' line ELSE line  (8)
+
+	'('  shift 15
+	.  error
+
+
+state 6
+	exp : '-' . exp  (17)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 17
+	identifier  goto 9
+
+
+state 7
+	exp : '(' . exp ')'  (18)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 18
+	identifier  goto 9
+
+
+state 8
+	line : exp . '\n'  (3)
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+
+	'+'  shift 19
+	'-'  shift 20
+	'*'  shift 21
+	'/'  shift 22
+	'\n'  shift 23
+	.  error
+
+
+state 9
+	exp : identifier .  (12)
+
+	.  reduce 12
+
+
+state 10
+	input : input line .  (2)
+
+	.  reduce 2
+
+
+state 11
+	line : assignment . '\n'  (4)
+
+	'\n'  shift 24
+	.  error
+
+
+state 12
+	line : if_statement .  (5)
+
+	.  reduce 5
+
+
+state 13
+	line : error '\n' .  (6)
+
+	.  reduce 6
+
+
+state 14
+	assignment : IDENTIFIER ASSIGN . exp  (9)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 25
+	identifier  goto 9
+
+
+state 15
+	if_statement : IF '(' . exp ')' line  (7)
+	if_statement : IF '(' . exp ')' line ELSE line  (8)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 26
+	identifier  goto 9
+
+
+state 16
+	identifier : IDENTIFIER .  (10)
+
+	.  reduce 10
+
+
+state 17
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+	exp : '-' exp .  (17)
+
+	.  reduce 17
+
+
+state 18
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+	exp : '(' exp . ')'  (18)
+
+	'+'  shift 19
+	'-'  shift 20
+	'*'  shift 21
+	'/'  shift 22
+	')'  shift 27
+	.  error
+
+
+state 19
+	exp : exp '+' . exp  (13)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 28
+	identifier  goto 9
+
+
+state 20
+	exp : exp '-' . exp  (14)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 29
+	identifier  goto 9
+
+
+state 21
+	exp : exp '*' . exp  (15)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 30
+	identifier  goto 9
+
+
+state 22
+	exp : exp '/' . exp  (16)
+
+	INTEGER  shift 3
+	IDENTIFIER  shift 16
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 31
+	identifier  goto 9
+
+
+state 23
+	line : exp '\n' .  (3)
+
+	.  reduce 3
+
+
+state 24
+	line : assignment '\n' .  (4)
+
+	.  reduce 4
+
+
+state 25
+	assignment : IDENTIFIER ASSIGN exp .  (9)
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+
+	'+'  shift 19
+	'-'  shift 20
+	'*'  shift 21
+	'/'  shift 22
+	'\n'  reduce 9
+
+
+state 26
+	if_statement : IF '(' exp . ')' line  (7)
+	if_statement : IF '(' exp . ')' line ELSE line  (8)
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+
+	'+'  shift 19
+	'-'  shift 20
+	'*'  shift 21
+	'/'  shift 22
+	')'  shift 32
+	.  error
+
+
+state 27
+	exp : '(' exp ')' .  (18)
+
+	.  reduce 18
+
+
+state 28
+	exp : exp . '+' exp  (13)
+	exp : exp '+' exp .  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+
+	'*'  shift 21
+	'/'  shift 22
+	'+'  reduce 13
+	'-'  reduce 13
+	'\n'  reduce 13
+	')'  reduce 13
+
+
+state 29
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp '-' exp .  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+
+	'*'  shift 21
+	'/'  shift 22
+	'+'  reduce 14
+	'-'  reduce 14
+	'\n'  reduce 14
+	')'  reduce 14
+
+
+state 30
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp '*' exp .  (15)
+	exp : exp . '/' exp  (16)
+
+	.  reduce 15
+
+
+state 31
+	exp : exp . '+' exp  (13)
+	exp : exp . '-' exp  (14)
+	exp : exp . '*' exp  (15)
+	exp : exp . '/' exp  (16)
+	exp : exp '/' exp .  (16)
+
+	.  reduce 16
+
+
+state 32
+	if_statement : IF '(' exp ')' . line  (7)
+	if_statement : IF '(' exp ')' . line ELSE line  (8)
+
+	error  shift 2
+	INTEGER  shift 3
+	IDENTIFIER  shift 4
+	IF  shift 5
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 8
+	identifier  goto 9
+	line  goto 33
+	assignment  goto 11
+	if_statement  goto 12
+
+
+33: shift/reduce conflict (shift 34, reduce 7) on ELSE
+state 33
+	if_statement : IF '(' exp ')' line .  (7)
+	if_statement : IF '(' exp ')' line . ELSE line  (8)
+
+	ELSE  shift 34
+	$end  reduce 7
+	error  reduce 7
+	INTEGER  reduce 7
+	IDENTIFIER  reduce 7
+	IF  reduce 7
+	'-'  reduce 7
+	'('  reduce 7
+
+
+state 34
+	if_statement : IF '(' exp ')' line ELSE . line  (8)
+
+	error  shift 2
+	INTEGER  shift 3
+	IDENTIFIER  shift 4
+	IF  shift 5
+	'-'  shift 6
+	'('  shift 7
+	.  error
+
+	exp  goto 8
+	identifier  goto 9
+	line  goto 35
+	assignment  goto 11
+	if_statement  goto 12
+
+
+state 35
+	if_statement : IF '(' exp ')' line ELSE line .  (8)
+
+	.  reduce 8
+
+
+State 33 contains 1 shift/reduce conflict.
+
+
+15 terminals, 7 nonterminals
+19 grammar rules, 36 states
+
+grammar parser grammar
+symbol# value# symbol
+     0      0  $end
+     1    256  error
+     2    257  INTEGER
+     3    258  IDENTIFIER
+     4    259  IF
+     5    260  ELSE
+     6    261  ASSIGN
+     7     43  '+'
+     8     45  '-'
+     9     42  '*'
+    10     47  '/'
+    11    262  UMINUS
+    12     10  '\n'
+    13     40  '('
+    14     41  ')'
+    15    263  $accept
+    16    264  input
+    17    265  exp
+    18    266  identifier
+    19    267  line
+    20    268  assignment
+    21    269  if_statement
