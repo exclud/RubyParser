@@ -13,14 +13,13 @@ void yyerror(const char *s);
 %}
 
 %union {
-    int ival;
     char *sval;
     string_literal sl;
 }
 
-%token <ival> INTEGER_CONST
 %token <sval> IDENTIFIER
 %token <sl> STRING_LITERAL
+%token EOL
 
 %%
 
