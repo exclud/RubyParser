@@ -10,7 +10,7 @@ This is a fully functioning Parser for Ruby using Yacc. Yacc generates a parser 
  - Support for arithmetic expressions including addition, subtraction, multiplication, division, and parentheses for grouping. 
 - Support Integer Values.
 - Supports Variables and Assignments.
-- Support for Strings. 
+- Support for String Variables. 
 ## Installation
 
 To run the parser, you need to install Yacc and Lex: 

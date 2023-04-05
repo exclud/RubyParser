@@ -1,7 +1,8 @@
 %{
+#define _GNU_SOURCE
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
@@ -10,14 +11,14 @@ void yyerror(const char *s);
 typedef struct symbol {
   char *name;
   int value;
-  char *str_value;  // added for string support
+  char *str_value;
   struct symbol *next;
 } symbol;
 
 symbol *symbol_table = NULL;
 
 symbol *lookup_symbol(const char *name);
-void add_symbol(const char *name, int value, const char *str_value);
+void add_symbol(const char *name, int value, char *str_value);
 %}
 
 %union {
@@ -27,13 +28,14 @@ void add_symbol(const char *name, int value, const char *str_value);
 
 %token <ival> INTEGER
 %token <sval> IDENTIFIER
-%token <sval> STRING  // added for string support
+%token <sval> STRING_LITERAL
 %token ASSIGN
 %left '+' '-'
 %left '*' '/'
 %right UMINUS
 %type <ival> exp
 %type <sval> identifier
+%type <sval> string_exp
 
 %%
 input
@@ -43,29 +45,35 @@ input
 
 line
     : exp '\n' { printf("Result: %d\n", $1); }
+    | string_exp '\n' { printf("Result: %s\n", $1); free($1); }
     | assignment '\n'
     | error '\n' { yyerrok; }
     ;
 
 assignment
+    : int_assignment
+    | str_assignment
+    ;
+
+int_assignment
     : IDENTIFIER ASSIGN exp {
         symbol *sym = lookup_symbol($1);
         if (!sym) {
             add_symbol($1, $3, NULL);
         } else {
             sym->value = $3;
-            free(sym->str_value);
-            sym->str_value = NULL;
         }
         free($1);
       }
-    | IDENTIFIER ASSIGN STRING {  // added for string support
+    ;
+
+str_assignment
+    : IDENTIFIER ASSIGN string_exp {
         symbol *sym = lookup_symbol($1);
         if (!sym) {
             add_symbol($1, 0, $3);
         } else {
-            sym->value = 0;
-            free(sym->str_value);
+            if (sym->str_value) free(sym->str_value);
             sym->str_value = $3;
         }
         free($1);
@@ -94,6 +102,12 @@ exp
     | '(' exp ')' { $$ = $2; }
     ;
 
+string_exp
+    : STRING_LITERAL
+    | identifier { $$ = strdup(lookup_symbol($1)->str_value); free($1); }
+    | string_exp '+' string_exp { asprintf(&$$, "%s%s", $1, $3); free($1); free($3); }
+    ;
+
 %%
 
 int main(int argc, char **argv) {
@@ -109,31 +123,26 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+void yyerror(const char * s) {
+fprintf(stderr, "Error: %s\n", s);
 }
-
 symbol *lookup_symbol(const char *name) {
-    symbol *sym = symbol_table;
-    while (sym) {
-        if (strcmp(sym->name, name) == 0) {
-                   return sym;
-    }
-    sym = sym->next;
+symbol *sym = symbol_table;
+while (sym) {
+if (strcmp(sym->name, name) == 0) {
+return sym;
+}
+sym = sym->next;
 }
 return NULL;
 }
 
-void add_symbol(const char *name, int value, const char *str_value) {
+void add_symbol(const char *name, int value, char *str_value) {
 symbol *sym = lookup_symbol(name);
 if (sym) {
 sym->value = value;
-if (str_value) {
-free(sym->str_value);
-sym->str_value = strdup(str_value);
-} else {
-sym->str_value = NULL;
-}
+if (sym->str_value) free(sym->str_value);
+sym->str_value = str_value ? strdup(str_value) : NULL;
 } else {
 sym = (symbol *) malloc(sizeof(symbol));
 sym->name = strdup(name);
@@ -143,3 +152,5 @@ sym->next = symbol_table;
 symbol_table = sym;
 }
 }
+
+

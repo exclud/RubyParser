@@ -363,8 +363,8 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[18] =
     {   0,
-        0,    0,    9,    8,    2,    3,    8,    4,    1,    7,
-        5,    0,    6,    0,    1,    5,    0
+        0,    0,    9,    8,    2,    3,    8,    4,    1,    6,
+        5,    0,    7,    0,    1,    5,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -754,15 +754,15 @@ YY_RULE_SETUP
 { yylval.sval = strdup(yytext); return IDENTIFIER; }
 	YY_BREAK
 case 6:
-/* rule 6 can match eol */
 YY_RULE_SETUP
 #line 12 "lexer.l"
-{ yylval.sval = strdup(yytext + 1); yylval.sval[strlen(yytext) - 2] = '\0'; return STRING; }  // added for string support
+{ return ASSIGN; }
 	YY_BREAK
 case 7:
+/* rule 7 can match eol */
 YY_RULE_SETUP
 #line 13 "lexer.l"
-{ return ASSIGN; }
+{ yylval.sval = strdup(yytext + 1); yylval.sval[strlen(yytext) - 2] = '\0'; return STRING_LITERAL; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
