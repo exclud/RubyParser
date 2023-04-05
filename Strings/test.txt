@@ -1,0 +1,6 @@
+a = 5
+b = 10
+c = a * b
+s1 = "Hello, "
+s2 = "World!"
+d = b / a
