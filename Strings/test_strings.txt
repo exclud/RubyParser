@@ -1,3 +1,2 @@
-"Hello, World!"
-"My name is ChatGPT."
+"Hello, World!."
 "Strings are fun!"
